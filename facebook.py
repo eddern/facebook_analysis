@@ -5,7 +5,7 @@ from pprint import pprint
 import datetime
 import graphs as g
 
-PATH = "facebook-edvard2912(05.05.2018)/messages"
+PATH = "../messages"
 conversations = os.listdir(PATH)
 
 line_with_pipes = "|"+"-"*136+"|"
@@ -18,7 +18,7 @@ def list_chats():
     total_messages = 0
     total_images = 0
     for conv_name in conversations:
-        if conv_name == "stickers_used" or conv_name.startswith("."):
+        if conv_name == "stickers_used" or conv_name.startswith(".") or "justyou" in conv_name:
             continue
         with open(PATH + "/" + conv_name + "/message.json") as f:
             number_of_imgs = number_of_images(PATH + "/" + conv_name)
@@ -26,7 +26,9 @@ def list_chats():
         total_images += number_of_imgs
         total_messages += len(json_data["messages"])
         written_by_me = numb_written_by_me(json_data["messages"])
-        messages[json_data["title"]] = (len(json_data["messages"]), number_of_imgs, written_by_me)
+        title = json_data["title"].encode('latin1').decode('utf8')
+        messages[title] = (len(json_data["messages"]), number_of_imgs, written_by_me)
+        # messages[json_data["title"]] = (len(json_data["messages"]), number_of_imgs, written_by_me)
 
     # sorted = sorted(messages, key=messages.get)
     tuple_list = [(k, v) for k, v in messages.items()]
@@ -58,7 +60,7 @@ def analyze_timestamps():
 def numb_written_by_me(data):
     me = 0
     for message in data:
-        if message["sender_name"].startswith("Edvard Schreiner"):
+        if "sender_name" in message and message["sender_name"].startswith("Cornelius"):
             my_messages_timestamps.append(message["timestamp"])
             me += 1
         else:
